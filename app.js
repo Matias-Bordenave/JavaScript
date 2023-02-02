@@ -1,237 +1,291 @@
+/* function to get the products */
+function getProducts() {
+    let products = JSON.parse(localStorage.getItem("products"))
+    return products
+}
 
-/*  */
-/*  */
-/*  */
-/* Funciones */
+function createProduct() {
+    let main__section 
+    main__section = document.getElementById("main__section")
 
-/* Agrega un producto al array de productos recibido por parametro */
-function addProduct(products) {
-    let product_id = products.length
-    let name = prompt("Ingrese el nombre del producto: ")
-    let description = prompt("Ingrese una descripcion del producto: ")
-    let cost = parseFloat(prompt("Ingrese el costo del producto: $ "))
-    let price = parseFloat(prompt("Ingrese el precio del producto: $ "))
-    let margin = price - cost
+    let html
 
-    const product = new Product(product_id, name, description, cost, price, margin)
+    html = "<form id='form'>"
+    html += "<label class='form-label' for='product__name'> Name </label>"
+    html += "<input id='product__name' type='text' class='form-control' required>"
+    
+    html += "<label class='form-label' for='product__description'> Description </label>"
+    html += "<input id='product__description' type='text' class='form-control' required>"
+    
+    html += "<label class='form-label' for='product__cost'> Cost </label>"
+    html += "<input id='product__cost' type='text' class='form-control' required>"
 
-    products.push(product)
-    alert("se agrego el producto: " + product.name)
+    html += "<label class='form-label' for='product__price'> Price </label>"
+    html += "<input id='product__price' type='text' class='form-control' required>"
+
+    html += "<button type='submit' class='btn btn-primary'>Submit</button>"
+
+    html += "</form>"
+
+    main__section.innerHTML = html
+
+    let form
+    form = document.getElementById('form')
+    form.addEventListener('submit', addProduct)
+
 }
 
 
-/* Agraga un item a la lista de productos */
-function addItem(products) {
-    let string = "Ingrese el id del tipo de producto que ingresara: \n "
+function addProduct(e) {
 
-    /* Muestro los id y nombre de todos los productos */
-    products.forEach(element => {
-        string += " ID: " + element.id + " " + element.name + "\n"
+    e.preventDefault()
+
+    let form = e.target
+
+    let name 
+    name = form.children[0].value
+    let description 
+    description = form.children[1].value
+    let cost 
+    cost = form.children[2].value
+    let price 
+    price = form.children[3].value
+
+    let new_product 
+    new_product= new Product(products.length + 1 , name , description, cost , price, price-cost )
+
+    products.push(new_product)
+
+    saveLocal('products',)
+}
+
+
+/* Guarda un item en el local storage */
+const saveLocal = (key, value) => { localStorage.setItem(key, value) }
+
+/* Inicia una precarga de datos para probar la aplicacion */
+function start() {
+    let products = []
+    products.push(new Product(products.length, "bateria", "bateria de 2000mha", 315, 500, 500 - 315, 0, 0))
+    products.push(new Product(products.length, "mouse", "mouse de 100bpi", 3015, 4500, 4500 - 3015, 0, 0))
+    products.push(new Product(products.length, "impresora", "Impresora HP", 7305, 8500, 8500 - 7305, 0, 0))
+
+    products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-415', ''))
+    products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-416', ''))
+    products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-417', ''))
+    products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-418', ''))
+    products[0].stock = products[0].items.length
+
+    products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-704', 'color blanco'))
+    products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-701', 'color blanco'))
+    products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-702', 'color rojo'))
+    products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-703', 'color blanco'))
+    products[1].stock = products[1].items.length
+
+    products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-001', 'color blanco'))
+    products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-002', 'color gris'))
+    products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-003', 'color negro'))
+    products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-004', 'color negro'))
+    products[2].stock = products[2].items.length
+
+    saveLocal("products", JSON.stringify(products))
+
+    console.log("productos cargados")
+
+    products = getProducts()
+
+    return products
+}
+
+/* Carga la tabla de productos en la seccion principal */
+function showProducts(products) {
+
+    let html
+    let main__section
+    main__section = document.getElementById("main__section")
+
+    html = "<article class='col-8'>"
+    html += "<h4> PRODUCTS </h4>"
+
+    html += "<div class='d-flex flex-row-reverse'>"
+    html += "<button class='btn btn-success' onClick='createProduct()'> Agregar Producto</button>"
+    html += "</div>"
+
+    if (products.length != 0) {
+        html += "<table class='table table-striped table-hover'>"
+        html += "<thead>"
+        html += "<th> ID </th>"
+        html += "<th> Nombre </th>"
+        html += "<th> Descripcion </th>"
+        html += "<th> Precio </th>"
+        html += "<th> Margen </th>"
+        html += "<th> Stock </th>"
+        html += "<th> Costo </th>"
+        html += "<th> Acciones </th>"
+        html += "</thead>"
+
+        html += "</tbody>"
+        products.forEach((element) => {
+            html += "<tr>"
+            html += "<td> " + element.id + "</td>"
+            html += "<td> " + element.name + "</td>"
+            html += "<td> " + element.description + "</td>"
+            html += "<td> " + element.cost + "</td>"
+            html += "<td> " + element.price + "</td>"
+            html += "<td> " + element.margin + "</td>"
+            html += "<td> " + element.stock + "</td>"
+            html += "<td>"
+            html += "<button class='btn btn-info' onclick='showItems(products[" + element.id + "])'> Ver Items </button>"
+            //html += "<button class='btn btn-info' onclick='addItem(products[" + element.id + "])'> Nuevo Item </button> "
+            html += "</td>"
+            html += "</tr>"
+        })
+
+        html += "</tbody>"
+        html += "</table>"
+    } else {
+        html += "<p> No posee Productos cargados </p>"
+    }
+
+    html += "</article>"
+
+    main__section.innerHTML = html
+    console.log(products)
+}
+
+function showItems(product) {
+
+    // check
+    console.log(product)
+    let html
+
+    let main__section
+    main__section = document.getElementById('main__section')
+
+    html = "<article class='col-8'>"
+    html += "<h4> ITEMS </h4>"
+
+    if (product.items.length != 0) {
+        html += "<table class='table table-striped table-hover'>"
+        html += "<thead>"
+        html += "<th> ID </th>"
+        html += "<th> Nombre </th>"
+        html += "<th> Descripcion </th>"
+        html += "<th> Precio </th>"
+        html += "<th> Codigo </th>"
+        html += "<th> Acciones </th>"
+        html += "</thead>"
+
+        html += "</tbody>"
+
+        product.items.forEach((element) => {
+            if (!element.sold) {
+                html += "<tr>"
+                html += "<td> " + element.id + "</td>"
+                html += "<td> " + product.name + "</td>"
+                html += "<td> " + product.description + "</td>"
+                html += "<td> " + product.price + "</td>"
+                html += "<td> " + element.code + "</td>"
+                html += "<td>"
+                html += "<button class='btn btn-success' onclick='addToCarrito(products[" + product.id + "].items[" + element.id + "])'> Agregar al carrito </button>"
+                html += "</td>"
+                html += "</tr>"
+            }
+        })
+
+        html += "</tbody>"
+        html += "</table>"
+    } else {
+        html += "<p> No posee Productos cargados </p>"
+    }
+
+    html += "</article>"
+
+    main__section.innerHTML = html
+
+
+}
+
+/* Agrega  un iterm al carrito */
+function addToCarrito(item) {
+    item.sold = true
+
+    carrito.push(item)
+    showCarrito(carrito)
+}
+
+/* Muestra la tabla del carrito de compras */
+function showCarrito(carrito) {
+
+    let html
+
+    let main__section
+    main__section = document.getElementById('main__section')
+
+    console.log(carrito)
+    if (carrito.length == 1 ) {
+        html = "<article class='col-3'>"
+        html += "<h4> CARRITO </h4>"
+        html += "<table class='table table-striped table-hover' id='carrito__table'>"
+        html += "<thead>"
+        html += "<th> Producto </th>"
+        html += "<th> Codigo </th>"
+        html += "<th> Precio </th>"
+        html += "<th> Acciones </th>"
+        html += "</thead>"
+        html += "<tbody>"
+        main__section.innerHTML += html
+    } else {
+        html = ""
+    }
+
+    let carrito__table = document.getElementById("carrito__table")
+
+    let total = 0
+    carrito.forEach((item) => {
+
+        total = total + products[item.product_id].price
+
+        html += "<tr>"
+        html += "<td> " + products[item.product_id].name + "</td>"
+        html += "<td> " + item.code + "</td>"
+        html += "<td> " + products[item.product_id].price + "</td>"
+        html += "<td> <button class='btn btn-danger' onclick='deleteFromCarrito(" + item.code + ")'> Eliminar </button> </td>"
+        html += "</tr>"
     })
 
-    string += (products.length + 1) + ". Cancelar"
+    html += "<tr colspan='3'>"
+    html += "<td> TOTAL </td>"
+    html += "<td> " + total + "</td>"
+    html += "</tr>" 
+    
 
-    let pid
-    /* Se repite mientras no ingrese un id correcto */
-    do {
+    carrito__table.innerHTML = html
 
-        pid = parseInt(prompt(string))
-        if (!products.some((product) => product.id == pid)) {
-            alert("no se encontro ningun producto con el id ingresado")
-        }
-    }
+    html = "</tbody>"
+    html += "</table>"
+    html += "</article>"
 
-    while ((!products.some((product) => product.id == pid)) && pid != (products.length + 1))
-
-    if (pid != (products.length + 1)) {
-        /* Una vez que lo haya seleccionado creo el item */
-        let code = prompt("Ingrese el codigo del producto: ")
-        let detail = prompt("Observaciones(opcional) : ")
-
-        const item = new Item(pid, products[pid].items.length, code, detail)
-
-        products[pid].items.push(item)
-        products[pid].stock = products[pid].items.length
-
-        alert("se agrego el item " + item.code + " A la lista de productos " + products[pid].name)
-    }
+    main__section.innerHTML += html
 }
 
-/* Muestra los productos de un array */
-function showProducts(products) {
-    if (products.length != 0) {
-        let string = ''
-        products.forEach(element => {
-            string += "ID: " + element.id + "\n"
-            string += "Nombre: " + element.name + "\n"
-            string += "Descripcion: " + element.description + "\n"
-            string += "Costo: " + element.cost + "\n"
-            string += "Price: " + element.price + "\n"
-            string += "Margen: " + element.margin + "\n"
-            string += "Stock: " + element.stock + "\n"
-            string += "---- ---- ---- ---- \n"
-        })
-
-        alert(string)
-    } else {
-        console.log("No posee productos cargados")
-    }
-}
-
-/* Muestra el menu */
-function showMenu() {
-    let option = 0
-
-    let string = "Ingrese el numero de la opcion deseada: \n 1. Cargar un producto. \n 2. Ver productos. \n 3. Eliminar un producto. \n 4. Agregar items de un producto \n 5. Vender. \n 6. Salir"
-
-    do {
-        option = parseInt(prompt(string))
-
-    } while (option > 6 || option < 1)
-    return option
-}
-
-function buy(products) {
-
-    let carrito = []
-
-    let repeat
-    do {
-
-        let string = "Ingrese el id del tipo de producto que desea comprar: \n "
-
-        /* Muestro los id y nombre de todos los productos */
-        products.forEach(element => {
-            if (element.items.length > 0) {
-                string += " ID: " + element.id + " " + element.name + "\n"
-            }
-        })
-
-        string += (products.length + 1) + ". Cancelar"
-
-        let product_id
-        /* Se repite mientras no ingrese un id correcto */
-        do {
-
-            product_id = parseInt(prompt(string))
-            if (!products.some((product) => product.id == product_id)) {
-                console.log("no se encontro ningun producto con el id ingresado")
-            }
-        }
-
-        while ((!products.some((product) => product.id == product_id)) && product_id != (products.length + 1))
-
-        if (product_id != (products.length + 1)) {
-
-            string = "Ingrese el id del item que desea comprar: \n "
-
-            /* Muestro los id y nombre de todos los productos */
-            products[product_id].items.forEach(element => {
-                if (!element.sold) {
-                    string += " ID: " + element.id + " - Code: " + element.code + "\n"
-                }
-            })
-
-            string += (products[product_id].items.length + 1) + ". Cancelar"
-
-            /* Se repite mientras no ingrese un id correcto */
-            let item_id
-            do {
-                item_id = parseInt(prompt(string))
-                if (!products[product_id].items.some((element) => element.id == item_id)) {
-                    console.log("no se encontro ningun item con el id ingresado")
-                }
-            }
-
-            while ((!products[product_id].items.some((item) => item.id == item_id)) && item_id != (products[product_id].items.length + 1))
-
-            if (item_id != (products[product_id].items.length + 1)) {
-                products[product_id].items[item_id].sold = true
-                carrito.push(products[product_id].items[item_id])
-                /* creo la venta y la muestro por consola */
-                const venta = new Venta(0, "Un cliente", new Date(), "efectivo", carrito)
-                console.log(venta)
-            }
-
-        }
-        do {
-            repeat = parseInt(prompt("¿Desea agregar un nuevo item al carrito? \n Ingrese el numero de la opcion deseada: \n 1. Si \n 2. No "))
-        } while (repeat < 1 || repeat > 2)
-    } while (repeat == 1)
-
-    if (repeat == 2) {
-        let string = "Se realizo la venta de: \n "
-
-        let total = 0
-        carrito.forEach((item) => {
-            total = total + parseFloat(products[item.product_id].price)
-        })
-
-        carrito.forEach((item) => {
-            string += products[item.product_id].name + " - Codigo: " + item.code + " - P/U: $ " + products[item.product_id].price + "\n"
-        })
-
-        string += "\n Total : $ " + total
-
-        alert(string)
-    }
+function deleteFromCarrito(code) {
+    let item = carrito.find(item.code == code )
+    console.log(item)
 }
 
 /*  */
 /*  */
-/* Carga inicial */
-let products = []
-products.push(new Product(products.length, "bateria", "bateria de 2000mha", 315, 500, 500 - 315, 0, 0))
-products.push(new Product(products.length, "mouse", "mouse de 100bpi", 3015, 4500, 4500 - 3015, 0, 0))
-products.push(new Product(products.length, "impresora", "Impresora HP", 7305, 8500, 8500 - 7305, 0, 0))
-
-products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-415', ''))
-products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-416', ''))
-products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-417', ''))
-products[0].items.push(new Item(products[0].id, products[0].items.length, 'abcd-418', ''))
-products[0].stock = products[0].items.length
-
-products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-704', 'color blanco'))
-products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-701', 'color blanco'))
-products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-702', 'color rojo'))
-products[1].items.push(new Item(products[1].id, products[1].items.length, 'sdfg-703', 'color blanco'))
-products[1].stock = products[1].items.length
-
-products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-001', 'color blanco'))
-products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-002', 'color gris'))
-products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-003', 'color negro'))
-products[2].items.push(new Item(products[2].id, products[2].items.length, 'kjhg-004', 'color negro'))
-products[2].stock = products[2].items.length
-
-
 /*  */
-/*  */
-/*  */
-/* Aplicacion */
+/* APLICACION */
+let carrito = []
 
-let show = true
+let products = getProducts()
 
-while (show) {
-    let option = showMenu()
-
-    switch (option) {
-        case 1:
-            addProduct(products)
-            break;
-        case 2:
-            showProducts(products)
-            break;
-        case 3:
-            console.log("proximamente")
-            break;
-        case 4:
-            addItem(products)
-            break;
-        case 5:
-            buy(products)
-            break;
-        case 6:
-            show = false
-            break;
-    }
+if (products == null) {
+    products = start()
 }
+//check
+console.log(products)
+
+showProducts(products)
